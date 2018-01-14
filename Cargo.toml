@@ -1,0 +1,8 @@
+[package]
+name = "multitrace"
+version = "0.1.0"
+authors = ["nick comer <nick@comer.io>"]
+
+[dependencies]
+tui = "0.2.0"
+core = { path = "core", version = "0.1.0" }
