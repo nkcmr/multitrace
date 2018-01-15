@@ -124,6 +124,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "core"
 version = "0.1.0"
 dependencies = [
+ "ipnetwork 0.12.7 (registry+https://github.com/rust-lang/crates.io-index)",
+ "libc 0.2.36 (registry+https://github.com/rust-lang/crates.io-index)",
  "pnet 0.20.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "trust-dns-resolver 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
