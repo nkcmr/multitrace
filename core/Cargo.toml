@@ -4,7 +4,8 @@ version = "0.1.0"
 authors = ["nick comer <nick@comer.io>"]
 
 [dependencies]
-pnet = "0.20.0"
-trust-dns-resolver = "^0.7"
-libc = "0.2.36"
 ipnetwork = "0.12.7"
+libc = "0.2.36"
+pnet = "0.20.0"
+pnet_macros_support = "0.20.0"
+trust-dns-resolver = "^0.7"

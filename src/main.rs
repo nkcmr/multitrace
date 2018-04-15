@@ -1,7 +1,7 @@
 extern crate core;
 
 use std::env;
-use core::{MultiTracer, Configuration, EventKind};
+use core::{MultiTracer, Configuration};
 
 fn main() {
     let mtr = MultiTracer::new(Configuration{});
