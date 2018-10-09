@@ -14,13 +14,13 @@ import (
 	"golang.org/x/net/ipv4"
 )
 
-type IPKind int
+type ipKind int
 
 type proto int
 
 const (
-	IPv4 IPKind = iota
-	IPv6
+	v4 ipKind = iota
+	v6
 )
 
 const (
@@ -32,49 +32,55 @@ const (
 
 const defaultMaxHops = 30
 
-type Option func(*Multitracer)
+type Option func(*Multitracer) error
 
 func Context(ctx context.Context) Option {
-	return Option(func(m *Multitracer) {
+	return func(m *Multitracer) error {
 		m.ctx = ctx
-	})
+		return nil
+	}
 }
 
 func UseUDP() Option {
-	return Option(func(m *Multitracer) {
+	return func(m *Multitracer) error {
 		m.proto = protoUDP
-	})
+		return nil
+	}
 }
 
 func UseTCP() Option {
-	return Option(func(m *Multitracer) {
+	return func(m *Multitracer) error {
 		m.proto = protoTCP
-	})
+		return nil
+	}
 }
 
 func UseICMP() Option {
-	return Option(func(m *Multitracer) {
+	return func(m *Multitracer) error {
 		m.proto = protoICMP
-	})
+		return nil
+	}
 }
 
 func UseIPv4() Option {
-	return Option(func(m *Multitracer) {
-		m.ipk = IPv4
-	})
+	return func(m *Multitracer) error {
+		m.ipk = v4
+		return nil
+	}
 }
 
 func Timeout(t time.Duration) Option {
-	return Option(func(m *Multitracer) {
+	return func(m *Multitracer) error {
 		m.timeout = t
-	})
+		return nil
+	}
 }
 
 type Multitracer struct {
 	hostname string
 	maxHops  int
 	ctx      context.Context
-	ipk      IPKind
+	ipk      ipKind
 	proto    proto
 	rand     rand.Source
 	timeout  time.Duration
@@ -85,13 +91,16 @@ func NewMultitracer(hostname string, options ...Option) (*Multitracer, error) {
 		hostname: hostname,
 		maxHops:  defaultMaxHops,
 		ctx:      context.Background(),
-		ipk:      IPv4,
+		ipk:      v4,
 		proto:    protoICMP,
 		rand:     rand.NewSource(time.Now().UnixNano()),
 		timeout:  time.Second * 5,
 	}
 	for _, opt := range options {
-		opt(m)
+		err := opt(m)
+		if err != nil {
+			return nil, err
+		}
 	}
 	return m, nil
 }
@@ -152,7 +161,7 @@ func (m *Multitracer) emitIcmp(c *icmp.PacketConn, ttl int) (error, bool, net.Ad
 	if err != nil {
 		return err, false, nil
 	}
-	if _, err := c.WriteTo(edata, &net.IPAddr{IP: net.ParseIP("8.8.8.8")}); err != nil {
+	if _, err := c.WriteTo(edata, &net.IPAddr{IP: net.ParseIP(m.hostname)}); err != nil {
 		return err, false, nil
 	}
 	for {
